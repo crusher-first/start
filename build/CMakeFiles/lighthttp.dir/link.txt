@@ -1,0 +1,1 @@
+/usr/bin/c++  -Wall -Wextra -O2 CMakeFiles/lighthttp.dir/src/buffer.cpp.o CMakeFiles/lighthttp.dir/src/epoll_server.cpp.o CMakeFiles/lighthttp.dir/src/http.cpp.o CMakeFiles/lighthttp.dir/src/main.cpp.o CMakeFiles/lighthttp.dir/src/threadpool.cpp.o CMakeFiles/lighthttp.dir/src/timer.cpp.o -o lighthttp  -lpthread 
