@@ -8,7 +8,7 @@ ThreadPool::ThreadPool(int thread_num)
 }
 
 ThreadPool::~ThreadPool() {
-    Stop();
+    try { Stop(); } catch(...) {}
 }
 
 void ThreadPool::Stop() {
@@ -21,7 +21,8 @@ void ThreadPool::Stop() {
     }
 }
 
-void ThreadPool::Worker() {
+void ThreadPool::Worker() noexcept {
+    try {
     while (m_running) {
         std::function<void()> task;
         {
@@ -35,4 +36,5 @@ void ThreadPool::Worker() {
         }
         if (task) task();
     }
+    } catch(...) {}
 }

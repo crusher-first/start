@@ -12,7 +12,9 @@
 class ThreadPool {
 public:
     explicit ThreadPool(int thread_num = 4);
-    ~ThreadPool();
+    ~ThreadPool() {
+        try { Stop(); } catch(...) {}
+    }
 
     template<typename T>
     void AddTask(T&& task) {
@@ -26,7 +28,7 @@ public:
     void Stop();
 
 private:
-    void Worker();
+    void Worker() noexcept;
 
     std::vector<std::thread> m_threads;
     std::queue<std::function<void()>> m_tasks;
