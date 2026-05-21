@@ -1,4 +1,5 @@
 #include "timer.h"
+#include <unordered_map>
 #include <unistd.h>
 
 Timer::Timer() {
@@ -13,11 +14,15 @@ void Timer::AddTimer(int fd, int timeout, std::function<void()> callback) {
     node.fd = fd;
     node.expire = std::chrono::steady_clock::now() + std::chrono::seconds(timeout);
     node.callback = callback;
+    node.valid = true;
     m_queue.push(node);
+    m_fd_map[fd] = node;
 }
 
 void Timer::DelTimer(int fd) {
-    // 简化实现：实际应该标记删除或使用 unordered_map 索引
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_fd_map[fd] = TimerNode();  // Mark as invalid
+    m_fd_map.erase(fd);
 }
 
 void Timer::Tick() {
@@ -28,10 +33,16 @@ void Timer::Tick() {
         TimerNode node = m_queue.top();
         if (node.expire > now) break;
         
-        if (node.callback) {
-            node.callback();
-        }
         m_queue.pop();
+        
+        // Only fire if this timer is still valid
+        auto it = m_fd_map.find(node.fd);
+        if (it != m_fd_map.end() && it->second.expire == node.expire) {
+            if (node.callback) {
+                node.callback();
+            }
+            m_fd_map.erase(node.fd);
+        }
     }
 }
 
