@@ -84,13 +84,17 @@ void EpollServer::HandleRead(int fd) {
     read_buf->Append(buffer, ret);
 
     HttpRequest* request = m_fd_info[fd]->request;
+    int consumed = read_buf->GetReadableBytes();
     HttpRequest::HTTP_CODE code = request->Parse(
         const_cast<char*>(read_buf->GetReadPtr()), 
-        read_buf->GetReadableBytes());
+        consumed);
 
     if (code == HttpRequest::NO_REQUEST) {
         return;
     }
+
+    // 推进读缓冲区到已解析位置
+    read_buf->Retrieve(consumed);
 
     // 生成响应
     std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body>Hello World</body></html>";
