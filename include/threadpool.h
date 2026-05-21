@@ -12,9 +12,7 @@
 class ThreadPool {
 public:
     explicit ThreadPool(int thread_num = 4);
-    ~ThreadPool() {
-        try { Stop(); } catch(...) {}
-    }
+    ~ThreadPool();
 
     template<typename T>
     void AddTask(T&& task) {
