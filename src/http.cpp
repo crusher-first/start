@@ -61,7 +61,7 @@ HttpRequest::HTTP_CODE HttpRequest::ParseHeaders(const char* line) {
         return NO_REQUEST;
     }
 
-    std::regex pattern("^([^:]+): (.*)\r\n$");
+    std::regex pattern("^([^:]+): (.*)$");
     std::cmatch result;
     if (std::regex_match(line, result, pattern)) {
         m_headers[result[1]] = result[2];
